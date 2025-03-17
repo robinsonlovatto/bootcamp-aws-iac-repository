@@ -45,3 +45,34 @@ jobs:
           parameter-overrides: >-
             pEnv=${{ vars.AWS_ENV }}
             ,pSolution=${{ vars.AWS_SOLUTION }}  
+
+      # Deploy CloudFormation IAM Roles Stack
+      - name: Action AWS CloudFormation "Deploy CloudFormation IAM Roles Stack" 
+        if: "contains(github.event.head_commit.message, '[roles]')" 
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: roles-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+          template: 05_iam_roles.yml
+          no-fail-on-empty-changeset: 1
+          capabilities: CAPABILITY_NAMED_IAM  
+          parameter-overrides: >-
+            pExportSecretStackName=rds-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+            ,pEnv=${{ vars.AWS_ENV }}
+            ,pSolution=${{ vars.AWS_SOLUTION }}
+
+      # Deploy CloudFormation DMS Stack
+      - name: Action AWS CloudFormation "Deploy CloudFormation DMS Stack" 
+        if: "contains(github.event.head_commit.message, '[dms]')" 
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: dms-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+          template: 06_dms.yml
+          no-fail-on-empty-changeset: 1
+          capabilities: CAPABILITY_NAMED_IAM 
+          parameter-overrides: >-
+            pExportS3StackName=s3-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+            ,pExportRdsStackName=rds-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+            ,pExportRolesStackName=roles-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}            
+            ,pExportSecretStackName=rds-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+            ,pEnv=${{ vars.AWS_ENV }}
+            ,pSolution=${{ vars.AWS_SOLUTION }}
