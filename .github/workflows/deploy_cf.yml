@@ -88,3 +88,34 @@ jobs:
           parameter-overrides: >-
             pEnv=${{ vars.AWS_ENV }}
             ,pSolution=${{ vars.AWS_SOLUTION }} 
+
+
+      # Deploy CloudFormation Athena Stack
+      - name: Action AWS CloudFormation "Deploy CloudFormation Athena Stack" 
+        if: "contains(github.event.head_commit.message, '[athena]')" 
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: athena-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+          template: 08_athena.yml
+          no-fail-on-empty-changeset: 1
+          parameter-overrides: >-
+            pExportS3StackName=s3-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+            ,pEnv=${{ vars.AWS_ENV }}
+            ,pSolution=${{ vars.AWS_SOLUTION }}
+
+      # Deploy CloudFormation IAM Users Stack
+      - name: Action AWS CloudFormation "Deploy CloudFormation IAM Users Stack" 
+        if: "contains(github.event.head_commit.message, '[users]')"
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: users-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+          template: 09_iam_users.yml
+          no-fail-on-empty-changeset: 1
+          capabilities: CAPABILITY_NAMED_IAM
+          parameter-overrides: >-
+            pExportRdsStackName=rds-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+            ,pExportS3StackName=s3-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+            ,pExportGlueStackName=glue-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+            ,pExportAthenaStackName=athena-cf-${{ vars.AWS_DEFAULT_REGION }}-${{ vars.AWS_ACCOUNT_ID }}-${{ vars.AWS_ENV }}-${{ vars.AWS_SOLUTION }}
+            ,pEnv=${{ vars.AWS_ENV }}
+            ,pSolution=${{ vars.AWS_SOLUTION }} 
