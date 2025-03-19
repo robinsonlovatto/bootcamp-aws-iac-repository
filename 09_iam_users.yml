@@ -30,7 +30,7 @@ Resources:
   rIAMUserDlk:
     Type: AWS::IAM::User  
     Properties: 
-      UserName: dlk_admin    
+      UserName: dlk_admin    # to access the data through athena
       Policies: 
         - PolicyName: inlineDlkPolicy
           PolicyDocument:
